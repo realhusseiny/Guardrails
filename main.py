@@ -142,13 +142,17 @@ def prescribe_infusion():
         dosing_range = drug_info["dosing_range"]
         unit = drug_info["unit"]
         
-        # Convert dose if necessary
-        if dose_unit == "mcg/kg/min":
+        # Handle the unit conversion for mcg/kg/min -> mcg/kg/hour
+        if dose_unit == "mcg/kg/min" and unit == "mcg/kg/hour":
             dose *= 60  # Convert mcg/kg/min to mcg/kg/hour
+        elif dose_unit == "ng/kg/min" and unit == "mcg/kg/min":
+            dose /= 1000  # Convert ng/kg/min to mcg/kg/min
+        
+        # Add more unit conversions here if needed
         
         # Calculate total dose
-        total_dose = calculate_total_dose(dose, weight)
-        
+        total_dose = calculate_total_dose(dose, weight, per_minute=(dose_unit == "mcg/kg/min"))
+
         # Identify the concentration based on weight
         for conc in drug_info["concentrations"]:
             weight_range = conc["weight_range"]
