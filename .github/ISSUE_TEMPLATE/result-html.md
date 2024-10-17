@@ -1,0 +1,28 @@
+---
+name: result.html
+about: Describe this issue template's purpose here.
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results for {{ drug }}</title>
+</head>
+<body>
+    <h1>Results for {{ drug }}</h1>
+    <p>Weight: {{ weight }} kg</p>
+    <p>Dose: {{ dose }} mcg/kg/min</p>
+    <h2>Options:</h2>
+    <ul>
+        {% for result in results %}
+        <li>Concentration: {{ result.concentration }} mg, Total Volume: {{ result.total_volume }} ml, Infusion Rate: {{ result.hourly_rate }} ml/hour</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Calculate again</a>
+</body>
+</html>
