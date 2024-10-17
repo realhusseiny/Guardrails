@@ -3,11 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Results for {{ drug }}</title>
+    <style>
+        .warning {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <h1>Results for {{ drug }}</h1>
     <p>Weight: {{ weight }} kg</p>
-    <p>Dose: {{ dose }} {{ unit }}</p> <!-- Shows the dose with the selected unit -->
+    <p>Dose: {{ dose }} {{ unit }}</p>
+    
+    {% if out_of_range_warning %}
+    <p class="warning">{{ error_message }}</p>
+    {% endif %}
     
     <h2>Options:</h2>
     <ul>
@@ -23,6 +32,7 @@
     <ul>
         <li>Weight: {{ weight }} kg</li>
         <li>Dose: {{ dose }} {{ unit }}</li>
+        <li>Accepted Dose Range: {{ dose_range[0] }} - {{ dose_range[1] }} {{ unit }}</li>
         <li>Volume: 25 ml</li>
     </ul>
     
