@@ -7,7 +7,7 @@
 <body>
     <h1>Results for {{ drug }}</h1>
     <p>Weight: {{ weight }} kg</p>
-    <p>Dose: {{ dose }} mcg/kg/hour</p> <!-- This shows the converted dose in mcg/kg/hour -->
+    <p>Dose: {{ dose }} {{ unit }}</p> <!-- Shows the dose with unit -->
     
     <h2>Options:</h2>
     <ul>
@@ -17,6 +17,13 @@
             Infusion Rate: {{ result.hourly_rate }} ml/hour
         </li>
         {% endfor %}
+    </ul>
+    
+    <h3>Re-check Details:</h3>
+    <ul>
+        <li>Weight: {{ weight }} kg</li>
+        <li>Dose: {{ dose }} {{ unit }}</li>
+        <li>Volume: 25 ml</li>
     </ul>
     
     <a href="/">Calculate again</a>
