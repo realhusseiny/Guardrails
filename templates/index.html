@@ -2,11 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Infusion Prescriber</title>
+    <title>Neonatal Infusion Prescriber</title>
     <style>
+        body {
+            background-color: #e0f7e9; /* Soft green background */
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2b7a4b; /* Dark green for headings */
+        }
+        form {
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         table, th, td {
             border: 1px solid black;
@@ -18,11 +37,24 @@
         .warning {
             color: red;
         }
+        .neonate-banner {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .neonate-banner img {
+            width: 100px;
+            height: auto;
+        }
     </style>
 </head>
 <body>
-    <h1>Infusion Prescriber</h1>
+    <div class="neonate-banner">
+        <img src="https://www.example.com/path-to-your-baby-image.jpg" alt="Neonate" /> <!-- Replace with the actual image URL -->
+        <h1>Neonatal Infusion Prescriber</h1>
+    </div>
+
     <form method="post">
+        <h2>Prescription Details</h2>
         <label for="drug">Drug Name:</label>
         <select id="drug" name="drug" required>
             {% for drug in guardrail_data %}
@@ -42,16 +74,16 @@
             <option value="mcg/kg/hour">mcg/kg/hour</option>
             <option value="ng/kg/min">ng/kg/min</option>
             <option value="mg/kg/hr">mg/kg/hr</option>
+            <option value="u/kg/hr">u/kg/hr</option> <!-- Added unit for insulin -->
         </select><br><br>
 
         <button type="submit">Calculate</button>
     </form>
     
     {% if error %}
-    <p style="color:red;">{{ error }}</p>
+    <p class="warning">{{ error }}</p>
     {% endif %}
-
-    <!-- Display Drug Concentration Table below the form -->
+    
     <h2>Guardrail Drug Concentration Table</h2>
     <table>
         <thead>
@@ -68,9 +100,24 @@
             <tr>
                 <td>{{ drug }}</td>
                 <td>{{ data.dosing_range[0] }}–{{ data.dosing_range[1] }} {{ data.unit }}</td>
-                <td>{{ data.concentrations[0].dose_options[0] }} mg or {{ data.concentrations[0].dose_options[1] }} mg</td>
-                <td>{{ data.concentrations[1].dose_options[0] }} mg or {{ data.concentrations[1].dose_options[1] }} mg</td>
-                <td>{{ data.concentrations[2].dose_options[0] }} mg or {{ data.concentrations[2].dose_options[1] }} mg</td>
+                <td>
+                    {{ data.concentrations[0].dose_options[0] }} mg
+                    {% if data.concentrations[0].dose_options|length > 1 %}
+                        or {{ data.concentrations[0].dose_options[1] }} mg
+                    {% endif %}
+                </td>
+                <td>
+                    {{ data.concentrations[1].dose_options[0] }} mg
+                    {% if data.concentrations[1].dose_options|length > 1 %}
+                        or {{ data.concentrations[1].dose_options[1] }} mg
+                    {% endif %}
+                </td>
+                <td>
+                    {{ data.concentrations[2].dose_options[0] }} mg
+                    {% if data.concentrations[2].dose_options|length > 1 %}
+                        or {{ data.concentrations[2].dose_options[1] }} mg
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
