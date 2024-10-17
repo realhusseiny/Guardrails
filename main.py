@@ -3,7 +3,7 @@ from flask import Flask, request, render_template
 # Initialize Flask app
 app = Flask(__name__)
 
-# Guardrail data with updated units and doses
+# Guardrail data with updated units and corrected concentrations
 guardrail_data = {
     "Adrenaline": {
         "dosing_range": (0.05, 1.5),
@@ -20,7 +20,7 @@ guardrail_data = {
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [25, 100]},
             {"weight_range": "1-2.4kg", "dose_options": [75, 150]},
-            {"weight_range": ">2.5kg", "dose_options": [150, 200]},
+            {"weight_range": ">2.5kg", "dose_options": [100, 150]},
         ],
     },
     "Dopamine": {
@@ -37,8 +37,8 @@ guardrail_data = {
         "unit": "mcg/kg/hr",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [0.75, 3]},
-            {"weight_range": "1-2.4kg", "dose_options": [1.5, 4.5]},
-            {"weight_range": ">2.5kg", "dose_options": [3, 7.5]},
+            {"weight_range": "1-2.4kg", "dose_options": [1, 4]},  # Corrected
+            {"weight_range": ">2.5kg", "dose_options": [1.5, 4.5]},  # Corrected
         ],
     },
     "Midazolam high": {
@@ -47,7 +47,7 @@ guardrail_data = {
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [2, 5]},
             {"weight_range": "1-2.4kg", "dose_options": [4, 12]},
-            {"weight_range": ">2.5kg", "dose_options": [6, 15]},
+            {"weight_range": ">2.5kg", "dose_options": [8, 20]},  # Corrected
         ],
     },
     "Morphine": {
@@ -56,14 +56,14 @@ guardrail_data = {
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [0.5, 1.5]},
             {"weight_range": "1-2.4kg", "dose_options": [1, 5]},
-            {"weight_range": ">2.5kg", "dose_options": [2, 7.5]},
+            {"weight_range": ">2.5kg", "dose_options": [2.5, 7.5]},
         ],
     },
     "Noradrenaline": {
         "dosing_range": (0.1, 1.5),
         "unit": "mcg/kg/min",
         "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [0.3, 1.5]},
+            {"weight_range": "<1kg", "dose_options": [0.3, 3]},
             {"weight_range": "1-2.4kg", "dose_options": [0.6, 3]},
             {"weight_range": ">2.5kg", "dose_options": [1.2, 6]},
         ],
@@ -72,9 +72,9 @@ guardrail_data = {
         "dosing_range": (5, 100),
         "unit": "ng/kg/min",
         "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [25, 100]},
-            {"weight_range": "1-2.4kg", "dose_options": [50, 200]},
-            {"weight_range": ">2.5kg", "dose_options": [100, 500]},
+            {"weight_range": "<1kg", "dose_options": [25, 200]},  # Corrected
+            {"weight_range": "1-2.4kg", "dose_options": [50, 0.3]},  # Corrected
+            {"weight_range": ">2.5kg", "dose_options": [75, 0.5]},  # Corrected
         ],
     },
     "Tolazoline (PPHN)": {
@@ -90,9 +90,9 @@ guardrail_data = {
         "dosing_range": (1, 1),
         "unit": "mcg/kg/min",
         "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [1]},
-            {"weight_range": "1-2.4kg", "dose_options": [2]},
-            {"weight_range": ">2.5kg", "dose_options": [4]},
+            {"weight_range": "<1kg", "dose_options": [1.5]},  # Corrected
+            {"weight_range": "1-2.4kg", "dose_options": [4]},  # Corrected
+            {"weight_range": ">2.5kg", "dose_options": [7.5]},  # Corrected
         ],
     },
     "Insulin": {
