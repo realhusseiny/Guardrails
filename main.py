@@ -3,18 +3,29 @@ from flask import Flask, request, render_template
 # Initialize Flask app
 app = Flask(__name__)
 
-# Guardrail data with all drugs and concentrations
+# Guardrail data with updated units and doses
 guardrail_data = {
     "Adrenaline": {
         "dosing_range": (0.05, 1.5),
+        "unit": "mcg/kg/min",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [0.25, 1.25]},
             {"weight_range": "1-2.4kg", "dose_options": [0.75, 3]},
             {"weight_range": ">2.5kg", "dose_options": [1.25, 5]},
         ],
     },
+    "Dobutamine": {
+        "dosing_range": (5, 40),
+        "unit": "mcg/kg/min",
+        "concentrations": [
+            {"weight_range": "<1kg", "dose_options": [25, 100]},
+            {"weight_range": "1-2.4kg", "dose_options": [75, 150]},
+            {"weight_range": ">2.5kg", "dose_options": [150, 200]},
+        ],
+    },
     "Dopamine": {
         "dosing_range": (7.5, 20),
+        "unit": "mcg/kg/min",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [10, 50]},
             {"weight_range": "1-2.4kg", "dose_options": [25, 100]},
@@ -23,6 +34,7 @@ guardrail_data = {
     },
     "Midazolam low": {
         "dosing_range": (30, 120),
+        "unit": "mcg/kg/hr",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [0.75, 3]},
             {"weight_range": "1-2.4kg", "dose_options": [1.5, 4.5]},
@@ -31,6 +43,7 @@ guardrail_data = {
     },
     "Midazolam high": {
         "dosing_range": (120, 300),
+        "unit": "mcg/kg/hr",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [2, 5]},
             {"weight_range": "1-2.4kg", "dose_options": [4, 12]},
@@ -39,6 +52,7 @@ guardrail_data = {
     },
     "Morphine": {
         "dosing_range": (10, 40),
+        "unit": "mcg/kg/hr",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [0.5, 1.5]},
             {"weight_range": "1-2.4kg", "dose_options": [1, 5]},
@@ -47,6 +61,7 @@ guardrail_data = {
     },
     "Noradrenaline": {
         "dosing_range": (0.1, 1.5),
+        "unit": "mcg/kg/min",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [0.3, 1.5]},
             {"weight_range": "1-2.4kg", "dose_options": [0.6, 3]},
@@ -55,22 +70,16 @@ guardrail_data = {
     },
     "Prostaglandin": {
         "dosing_range": (5, 100),
+        "unit": "ng/kg/min",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [25, 100]},
             {"weight_range": "1-2.4kg", "dose_options": [50, 200]},
             {"weight_range": ">2.5kg", "dose_options": [100, 500]},
         ],
     },
-    "Tolazoline (for arterial spasm)": {
-        "dosing_range": None,
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [5]},
-            {"weight_range": "1-2.4kg", "dose_options": [5]},
-            {"weight_range": ">2.5kg", "dose_options": [5]},
-        ],
-    },
     "Tolazoline (PPHN)": {
         "dosing_range": (0.25, 2),
+        "unit": "mg/kg/hr",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [50, 100]},
             {"weight_range": "1-2.4kg", "dose_options": [100, 200]},
@@ -79,6 +88,7 @@ guardrail_data = {
     },
     "Vecuronium": {
         "dosing_range": (1, 1),
+        "unit": "mcg/kg/min",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [1]},
             {"weight_range": "1-2.4kg", "dose_options": [2]},
@@ -87,6 +97,7 @@ guardrail_data = {
     },
     "Insulin": {
         "dosing_range": None,
+        "unit": "mcg/kg/hr",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [5, 15]},
             {"weight_range": "1-2.4kg", "dose_options": [10, 25]},
@@ -95,6 +106,7 @@ guardrail_data = {
     },
     "Rocuronium": {
         "dosing_range": (300, 600),
+        "unit": "mcg/kg/hr",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [20]},
             {"weight_range": "1-2.4kg", "dose_options": [35]},
@@ -128,6 +140,7 @@ def prescribe_infusion():
         # Retrieve drug info
         drug_info = guardrail_data[drug]
         dosing_range = drug_info["dosing_range"]
+        unit = drug_info["unit"]
         
         # Convert dose if necessary
         if dose_unit == "mcg/kg/min":
@@ -152,7 +165,7 @@ def prescribe_infusion():
                         "hourly_rate": round(hourly_rate, 2)
                     })
         
-        return render_template("result.html", drug=drug, weight=weight, dose=dose, results=results)
+        return render_template("result.html", drug=drug, weight=weight, dose=dose, unit=unit, results=results)
 
     return render_template("index.html")
 
