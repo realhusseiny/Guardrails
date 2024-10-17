@@ -9,12 +9,20 @@
     <form method="post">
         <label for="drug">Drug Name:</label>
         <input type="text" id="drug" name="drug" required><br><br>
-
+        
         <label for="weight">Weight (kg):</label>
         <input type="number" id="weight" name="weight" step="0.1" required><br><br>
-
-        <label for="dose">Dose (mcg/kg/min):</label>
+        
+        <label for="dose">Dose:</label>
         <input type="number" id="dose" name="dose" step="0.1" required><br><br>
+        
+        <label for="dose_unit">Dose Unit:</label>
+        <select id="dose_unit" name="dose_unit" required>
+            <option value="mcg/kg/min">mcg/kg/min</option>
+            <option value="mcg/kg/hour">mcg/kg/hour</option>
+            <option value="ng/kg/min">ng/kg/min</option>
+            <option value="mg/kg/hr">mg/kg/hr</option>
+        </select><br><br>
 
         <button type="submit">Calculate</button>
     </form>
