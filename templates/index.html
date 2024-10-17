@@ -3,12 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Infusion Prescriber</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .warning {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <h1>Infusion Prescriber</h1>
     <form method="post">
         <label for="drug">Drug Name:</label>
-        <input type="text" id="drug" name="drug" required><br><br>
+        <select id="drug" name="drug" required>
+            {% for drug in guardrail_data %}
+            <option value="{{ drug }}">{{ drug }}</option>
+            {% endfor %}
+        </select><br><br>
         
         <label for="weight">Weight (kg):</label>
         <input type="number" id="weight" name="weight" step="0.1" required><br><br>
@@ -30,5 +50,30 @@
     {% if error %}
     <p style="color:red;">{{ error }}</p>
     {% endif %}
+
+    <!-- Display Drug Concentration Table below the form -->
+    <h2>Guardrail Drug Concentration Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Drug</th>
+                <th>Dosing Range</th>
+                <th>&lt;1kg in 25ml</th>
+                <th>1–2.4kg in 25ml</th>
+                <th>&gt;2.5kg in 25ml</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for drug, data in guardrail_data.items() %}
+            <tr>
+                <td>{{ drug }}</td>
+                <td>{{ data.dosing_range[0] }}–{{ data.dosing_range[1] }} {{ data.unit }}</td>
+                <td>{{ data.concentrations[0].dose_options[0] }} mg or {{ data.concentrations[0].dose_options[1] }} mg</td>
+                <td>{{ data.concentrations[1].dose_options[0] }} mg or {{ data.concentrations[1].dose_options[1] }} mg</td>
+                <td>{{ data.concentrations[2].dose_options[0] }} mg or {{ data.concentrations[2].dose_options[1] }} mg</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
