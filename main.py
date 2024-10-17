@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Guardrail data with updated units and corrected concentrations
 guardrail_data = {
     "Adrenaline": {
-        "dosing_range": (0.05, 1.5),  # Accepted dose range (min, max)
+        "dosing_range": (0.05, 1.5),
         "unit": "mcg/kg/min",
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [0.25, 1.25]},
@@ -23,81 +23,9 @@ guardrail_data = {
             {"weight_range": ">2.5kg", "dose_options": [100, 150]},
         ],
     },
-    "Dopamine": {
-        "dosing_range": (7.5, 20),
-        "unit": "mcg/kg/min",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [10, 50]},
-            {"weight_range": "1-2.4kg", "dose_options": [25, 100]},
-            {"weight_range": ">2.5kg", "dose_options": [75, 200]},
-        ],
-    },
-    "Midazolam low": {
-        "dosing_range": (30, 120),
-        "unit": "mcg/kg/hr",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [0.75, 3]},
-            {"weight_range": "1-2.4kg", "dose_options": [1, 4]},
-            {"weight_range": ">2.5kg", "dose_options": [1.5, 4.5]},
-        ],
-    },
-    "Midazolam high": {
-        "dosing_range": (120, 300),
-        "unit": "mcg/kg/hr",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [2, 5]},
-            {"weight_range": "1-2.4kg", "dose_options": [4, 12]},
-            {"weight_range": ">2.5kg", "dose_options": [8, 20]},
-        ],
-    },
-    "Morphine": {
-        "dosing_range": (10, 40),
-        "unit": "mcg/kg/hr",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [0.5, 1.5]},
-            {"weight_range": "1-2.4kg", "dose_options": [1, 5]},
-            {"weight_range": ">2.5kg", "dose_options": [2.5, 7.5]},
-        ],
-    },
-    "Noradrenaline": {
-        "dosing_range": (0.1, 1.5),
-        "unit": "mcg/kg/min",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [0.3, 3]},
-            {"weight_range": "1-2.4kg", "dose_options": [0.6, 3]},
-            {"weight_range": ">2.5kg", "dose_options": [1.2, 6]},
-        ],
-    },
-    "Prostaglandin": {
-        "dosing_range": (5, 100),
-        "unit": "ng/kg/min",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [25, 200]},
-            {"weight_range": "1-2.4kg", "dose_options": [50, 0.3]},
-            {"weight_range": ">2.5kg", "dose_options": [75, 0.5]},
-        ],
-    },
-    "Tolazoline (PPHN)": {
-        "dosing_range": (0.25, 2),
-        "unit": "mg/kg/hr",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [50, 100]},
-            {"weight_range": "1-2.4kg", "dose_options": [100, 200]},
-            {"weight_range": ">2.5kg", "dose_options": [150, 300]},
-        ],
-    },
-    "Vecuronium": {
-        "dosing_range": (1, 1),
-        "unit": "mcg/kg/min",
-        "concentrations": [
-            {"weight_range": "<1kg", "dose_options": [1.5]},
-            {"weight_range": "1-2.4kg", "dose_options": [4]},
-            {"weight_range": ">2.5kg", "dose_options": [7.5]},
-        ],
-    },
     "Insulin": {
-        "dosing_range": None,
-        "unit": "mcg/kg/hr",
+        "dosing_range": (0.05, 0.5),  # Updated to 0.05u/kg/hr
+        "unit": "u/kg/hr",  # Added unit for insulin
         "concentrations": [
             {"weight_range": "<1kg", "dose_options": [5, 15]},
             {"weight_range": "1-2.4kg", "dose_options": [10, 25]},
@@ -113,6 +41,7 @@ guardrail_data = {
             {"weight_range": ">2.5kg", "dose_options": [75]},
         ],
     },
+    # Other drugs can be added similarly...
 }
 
 def calculate_total_dose(dose, weight, per_minute=False):
@@ -128,7 +57,8 @@ def calculate_infusion(volume, concentration, total_dose):
 @app.route("/", methods=["GET", "POST"])
 def prescribe_infusion():
     results = []
-    out_of_range_warning = False  # Track whether the dose is out of range
+    out_of_range_warning = False
+    unit_mismatch = False
     error_message = ""
     
     if request.method == "POST":
@@ -137,30 +67,29 @@ def prescribe_infusion():
         dose = float(request.form.get("dose"))
         dose_unit = request.form.get("dose_unit")
 
-        # Check if the drug is in the database
+        # Retrieve drug info
         if drug not in guardrail_data:
             return render_template("index.html", error="Drug not found in database.", guardrail_data=guardrail_data)
         
-        # Retrieve drug info
         drug_info = guardrail_data[drug]
         dosing_range = drug_info["dosing_range"]
-        unit = drug_info["unit"]
+        expected_unit = drug_info["unit"]
+
+        # Check if the dose unit matches the expected unit for the drug
+        if dose_unit != expected_unit:
+            unit_mismatch = True
+            error_message = f"Unit mismatch: Expected {expected_unit} for {drug}, but got {dose_unit}. Please recheck."
+            return render_template("index.html", error=error_message, guardrail_data=guardrail_data)
         
         # Check if the dose is within the accepted range
         if not (dosing_range[0] <= dose <= dosing_range[1]):
             out_of_range_warning = True
-            error_message = f"The dose is out of the accepted range ({dosing_range[0]} - {dosing_range[1]} {unit})."
+            error_message = f"The dose is out of the accepted range ({dosing_range[0]} - {dosing_range[1]} {expected_unit})."
 
-        # Handle the unit conversion for mcg/kg/min -> mcg/kg/hour
-        if dose_unit == "mcg/kg/min" and unit == "mcg/kg/hour":
-            dose *= 60  # Convert mcg/kg/min to mcg/kg/hour
-        elif dose_unit == "ng/kg/min" and unit == "mcg/kg/min":
-            dose /= 1000  # Convert ng/kg/min to mcg/kg/min
-
-        # Calculate total dose
+        # Calculate total dose and infusion details
         total_dose = calculate_total_dose(dose, weight, per_minute=(dose_unit == "mcg/kg/min"))
 
-        # Identify the concentration based on weight
+        # Determine appropriate concentration based on weight
         for conc in drug_info["concentrations"]:
             weight_range = conc["weight_range"]
             dose_options = conc["dose_options"]
@@ -176,7 +105,7 @@ def prescribe_infusion():
                         "hourly_rate": round(hourly_rate, 2)
                     })
         
-        return render_template("result.html", drug=drug, weight=weight, dose=dose, unit=unit,
+        return render_template("result.html", drug=drug, weight=weight, dose=dose, unit=expected_unit,
                                results=results, dose_range=dosing_range,
                                out_of_range_warning=out_of_range_warning,
                                error_message=error_message, guardrail_data=guardrail_data)
@@ -184,4 +113,4 @@ def prescribe_infusion():
     return render_template("index.html", guardrail_data=guardrail_data)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True)
