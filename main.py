@@ -120,7 +120,13 @@ def calculate_total_dose(dose, weight, per_minute=False):
         dose *= 60  # Convert mcg/kg/min to mcg/kg/hr if necessary
     return dose * weight * 24  # Total dose for 24 hours
 
-def calculate_infusion(volume, concentration, total_dose):
+def calculate_infusion(drug, concentration, total_dose):
+    # Use 50ml for Insulin, otherwise use 25ml
+    if drug == "Insulin":
+        volume = 50
+    else:
+        volume = 25
+    
     total_volume = total_dose / (concentration * volume)
     hourly_rate = total_volume / 24
     return total_volume, hourly_rate
@@ -169,7 +175,7 @@ def prescribe_infusion():
                (1 <= weight <= 2.4 and weight_range == "1-2.4kg") or \
                (weight > 2.5 and weight_range == ">2.5kg"):
                 for dose_option in dose_options:
-                    total_volume, hourly_rate = calculate_infusion(25, dose_option, total_dose)
+                    total_volume, hourly_rate = calculate_infusion(drug, dose_option, total_dose)
                     results.append({
                         "concentration": dose_option,
                         "total_volume": round(total_volume, 2),
