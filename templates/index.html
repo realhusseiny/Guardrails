@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ensures proper scaling on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neonatal Infusion Prescriber</title>
     <style>
         body {
-            background-color: #e0f7e9; /* Soft green background */
+            background-color: #f3e5f5; /* Light purple background */
             font-family: Arial, sans-serif;
             color: #333;
             margin: 0;
@@ -14,7 +14,7 @@
         }
         h1 {
             text-align: center;
-            color: #2b7a4b; /* Dark green for headings */
+            color: #6a1b9a; /* Dark purple for headings */
             font-size: 2em;
             margin: 10px 0;
         }
@@ -26,7 +26,7 @@
             width: 90%; /* Changed to percentage for responsiveness */
             max-width: 600px;
             border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
         table {
             width: 100%;
@@ -44,14 +44,6 @@
         .warning {
             color: red;
         }
-        .neonate-banner {
-            text-align: center;
-            margin-top: 10px;
-        }
-        .neonate-banner img {
-            width: 80px; /* Adjusted image size for mobile */
-            height: auto;
-        }
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.5em; /* Smaller font size for mobile */
@@ -64,10 +56,7 @@
     </style>
 </head>
 <body>
-    <div class="neonate-banner">
-        <img src="https://www.example.com/path-to-your-baby-image.jpg" alt="Neonate" /> <!-- Replace with the actual image URL -->
-        <h1>Neonatal Infusion Prescriber</h1>
-    </div>
+    <h1>Neonatal Infusion Prescriber</h1>
 
     <form method="post">
         <h2>Prescription Details</h2>
@@ -87,9 +76,9 @@
         <label for="dose_unit">Dose Unit:</label>
         <select id="dose_unit" name="dose_unit" required>
             <option value="mcg/kg/min">mcg/kg/min</option>
-            <option value="mcg/kg/hour">mcg/kg/hour</option>
+            <option value="mcg/kg/hr">mcg/kg/hr</option> <!-- Updated -->
             <option value="ng/kg/min">ng/kg/min</option>
-            <option value="mg/kg/hr">mg/kg/hr</option>
+            <option value="mg/kg/hr">mg/kg/hr</option> <!-- Updated -->
             <option value="u/kg/hr">u/kg/hr</option> <!-- Added unit for insulin -->
         </select><br><br>
 
