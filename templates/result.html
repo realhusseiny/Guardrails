@@ -4,38 +4,66 @@
     <meta charset="UTF-8">
     <title>Results for {{ drug }}</title>
     <style>
+        body {
+            background-color: #e0f7e9;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2b7a4b;
+        }
+        .result-container {
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
         .warning {
             color: red;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Results for {{ drug }}</h1>
-    <p>Weight: {{ weight }} kg</p>
-    <p>Dose: {{ dose }} {{ unit }}</p>
-    
-    {% if out_of_range_warning %}
-    <p class="warning">{{ error_message }}</p>
-    {% endif %}
-    
-    <h2>Options:</h2>
-    <ul>
-        {% for result in results %}
-        <li>Concentration: {{ result.concentration }} mg, 
-            Total Volume: {{ result.total_volume }} ml, 
-            Infusion Rate: {{ result.hourly_rate }} ml/hour
-        </li>
-        {% endfor %}
-    </ul>
-    
-    <h3>Re-check Details:</h3>
-    <ul>
-        <li>Weight: {{ weight }} kg</li>
-        <li>Dose: {{ dose }} {{ unit }}</li>
-        <li>Accepted Dose Range: {{ dose_range[0] }} - {{ dose_range[1] }} {{ unit }}</li>
-        <li>Volume: 25 ml</li>
-    </ul>
-    
-    <a href="/">Calculate again</a>
+    <div class="result-container">
+        <h1>Results for {{ drug }}</h1>
+        <p>Weight: {{ weight }} kg</p>
+        <p>Dose: {{ dose }} {{ unit }}</p>
+
+        {% if out_of_range_warning %}
+        <p class="warning">{{ error_message }}</p>
+        {% endif %}
+        
+        <h2>Infusion Options:</h2>
+        <ul>
+            {% for result in results %}
+            <li>
+                Concentration: {{ result.concentration }} mg, 
+                Total Volume: {{ result.total_volume }} ml, 
+                Infusion Rate: {{ result.hourly_rate }} ml/hour
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <h3>Re-check Details:</h3>
+        <ul>
+            <li>Weight: {{ weight }} kg</li>
+            <li>Dose: {{ dose }} {{ unit }}</li>
+            <li>Accepted Dose Range: {{ dose_range[0] }} - {{ dose_range[1] }} {{ unit }}</li>
+            <li>Volume: 25 ml</li>
+        </ul>
+        
+        <a href="/">Calculate again</a>
+    </div>
 </body>
 </html>
