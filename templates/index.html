@@ -96,9 +96,9 @@
             <tr>
                 <th>Drug</th>
                 <th>Dosing Range</th>
-                <th>&lt;1kg in 25ml</th>
-                <th>1–2.4kg in 25ml</th>
-                <th>&gt;2.5kg in 25ml</th>
+                <th>&lt;1kg in 25ml (50ml for Insulin)</th> <!-- Mentioning 50ml for Insulin -->
+                <th>1–2.4kg in 25ml (50ml for Insulin)</th>
+                <th>&gt;2.5kg in 25ml (50ml for Insulin)</th>
             </tr>
         </thead>
         <tbody>
@@ -107,21 +107,33 @@
                 <td>{{ drug }}</td>
                 <td>{{ data.dosing_range[0] }}–{{ data.dosing_range[1] }} {{ data.unit }}</td>
                 <td>
+                    {% if drug == "Insulin" %}
+                    {{ data.concentrations[0].dose_options[0] }} mg in 50ml
+                    {% else %}
                     {{ data.concentrations[0].dose_options[0] }} mg
                     {% if data.concentrations[0].dose_options|length > 1 %}
                         or {{ data.concentrations[0].dose_options[1] }} mg
                     {% endif %}
+                    {% endif %}
                 </td>
                 <td>
+                    {% if drug == "Insulin" %}
+                    {{ data.concentrations[1].dose_options[0] }} mg in 50ml
+                    {% else %}
                     {{ data.concentrations[1].dose_options[0] }} mg
                     {% if data.concentrations[1].dose_options|length > 1 %}
                         or {{ data.concentrations[1].dose_options[1] }} mg
                     {% endif %}
+                    {% endif %}
                 </td>
                 <td>
+                    {% if drug == "Insulin" %}
+                    {{ data.concentrations[2].dose_options[0] }} mg in 50ml
+                    {% else %}
                     {{ data.concentrations[2].dose_options[0] }} mg
                     {% if data.concentrations[2].dose_options|length > 1 %}
                         or {{ data.concentrations[2].dose_options[1] }} mg
+                    {% endif %}
                     {% endif %}
                 </td>
             </tr>
