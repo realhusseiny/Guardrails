@@ -86,7 +86,7 @@ guardrail_data = {
             {"weight_range": ">2.5kg", "dose_options": [150, 300]},
         ],
     },
-       "Vecuronium": {
+    "Vecuronium": {
         "dosing_range": (1, 1),
         "unit": "mcg/kg/min",
         "concentrations": [
@@ -117,7 +117,7 @@ guardrail_data = {
 
 def calculate_total_dose(dose, weight, per_minute=False):
     if per_minute:
-        dose *= 60  # Convert mcg/kg/min to mcg/kg/hour if necessary
+        dose *= 60  # Convert mcg/kg/min to mcg/kg/hr if necessary
     return dose * weight * 24  # Total dose for 24 hours
 
 def calculate_infusion(volume, concentration, total_dose):
