@@ -182,7 +182,7 @@ def prescribe_infusion():
             weight_range = conc
 
 ["weight_range"]
-            dose_options = conc["dose_options"]
+        dose_options = conc["dose_options"]
             
             if (weight < 1 and weight_range == "<1kg") or \
                (1 <= weight <= 2.4 and weight_range == "1-2.4kg") or \
