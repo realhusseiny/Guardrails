@@ -179,10 +179,8 @@ def prescribe_infusion():
 
         # Determine appropriate concentration based on weight
         for conc in drug_info["concentrations"]:
-            weight_range = conc
-
-["weight_range"]
-        dose_options = conc["dose_options"]
+            weight_range = conc["weight_range"]
+            dose_options = conc["dose_options"]
             
             if (weight < 1 and weight_range == "<1kg") or \
                (1 <= weight <= 2.4 and weight_range == "1-2.4kg") or \
