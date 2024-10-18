@@ -65,7 +65,6 @@
                 Concentration: {{ result.concentration }} mg, 
                 Total Volume: {{ result.total_volume }} ml, 
                 Infusion Rate: {{ result.hourly_rate }} ml/hr
-                <!-- Special condition for insulin -->
                 {% if drug == "Insulin" %}
                 (in 50ml)
                 {% else %}
