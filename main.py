@@ -116,20 +116,29 @@ guardrail_data = {
     }
 }
 
-def calculate_total_dose(dose, weight, per_minute=False):
-    if per_minute:
-        dose *= 60  # Convert mcg/kg/min to mcg/kg/hr if necessary
-    return dose * weight * 24  # Total dose for 24 hours
+def calculate_total_dose(dose, weight, unit_per_minute):
+    # If the unit is per minute, multiply by 60 to get the dose per hour
+    if unit_per_minute:
+        return dose * weight * 24 * 60  # Total dose for 24 hours
+    else:
+        return dose * weight * 24  # Total dose for 24 hours without multiplying by 60
 
-def calculate_infusion(drug, concentration, total_dose):
-    # Use 50ml for Insulin, otherwise use 25ml
+def calculate_infusion(drug, concentration_mg, total_dose_mcg):
+    # Convert concentration to mcg
+    concentration_mcg = concentration_mg * 1000  # Convert mg to mcg
+    
+    # Use the correct volume (50 ml for Insulin, 25 ml for others)
     if drug == "Insulin":
         volume = 50
     else:
         volume = 25
     
-    total_volume = total_dose / (concentration * volume)
+    # Calculate the total volume in ml
+    total_volume = (total_dose_mcg / concentration_mcg) * volume
+    
+    # Calculate the hourly rate (ml/hr)
     hourly_rate = total_volume / 24
+    
     return total_volume, hourly_rate
 
 @app.route("/", methods=["GET", "POST"])
@@ -164,19 +173,22 @@ def prescribe_infusion():
             out_of_range_warning = True
             error_message = f"The dose is out of the accepted range ({dosing_range[0]} - {dosing_range[1]} {expected_unit})."
 
-        # Calculate total dose and infusion details
-        total_dose = calculate_total_dose(dose, weight, per_minute=(dose_unit == "mcg/kg/min"))
+        # Calculate total dose (mcg/day), considering whether it's per minute or per hour
+        per_minute = (dose_unit == "mcg/kg/min" or dose_unit == "ng/kg/min")
+        total_dose_mcg = calculate_total_dose(dose, weight, per_minute)
 
         # Determine appropriate concentration based on weight
         for conc in drug_info["concentrations"]:
-            weight_range = conc["weight_range"]
+            weight_range = conc
+
+["weight_range"]
             dose_options = conc["dose_options"]
             
             if (weight < 1 and weight_range == "<1kg") or \
                (1 <= weight <= 2.4 and weight_range == "1-2.4kg") or \
                (weight > 2.5 and weight_range == ">2.5kg"):
                 for dose_option in dose_options:
-                    total_volume, hourly_rate = calculate_infusion(drug, dose_option, total_dose)
+                    total_volume, hourly_rate = calculate_infusion(drug, dose_option, total_dose_mcg)
                     results.append({
                         "concentration": dose_option,
                         "total_volume": round(total_volume, 2),
