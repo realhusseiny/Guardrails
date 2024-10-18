@@ -116,31 +116,6 @@ guardrail_data = {
     }
 }
 
-def calculate_total_dose(dose, weight, unit_per_minute):
-    # If the unit is per minute, multiply by 60 to get the dose per hour
-    if unit_per_minute:
-        return dose * weight * 24 * 60  # Total dose for 24 hours
-    else:
-        return dose * weight * 24  # Total dose for 24 hours without multiplying by 60
-
-def calculate_infusion(drug, concentration_mg, total_dose_mcg):
-    # Convert concentration to mcg
-    concentration_mcg = concentration_mg * 1000  # Convert mg to mcg
-    
-    # Use the correct volume (50 ml for Insulin, 25 ml for others)
-    if drug == "Insulin":
-        volume = 50
-    else:
-        volume = 25
-    
-    # Calculate the total volume in ml
-    total_volume = (total_dose_mcg / concentration_mcg) * volume
-    
-    # Calculate the hourly rate (ml/hr)
-    hourly_rate = total_volume / 24
-    
-    return total_volume, hourly_rate
-
 @app.route("/", methods=["GET", "POST"])
 def prescribe_infusion():
     results = []
@@ -150,7 +125,7 @@ def prescribe_infusion():
     
     if request.method == "POST":
         drug = request.form.get("drug")
-        weight = float(request.form.get("weight"))
+        weight = round(float(request.form.get("weight")), 4)  # Accepts weight up to 4 decimal places
         dose = float(request.form.get("dose"))
         dose_unit = request.form.get("dose_unit")
 
@@ -182,9 +157,10 @@ def prescribe_infusion():
             weight_range = conc["weight_range"]
             dose_options = conc["dose_options"]
             
+            # Adjusted the weight condition to include 2.5 kg in the ">2.5kg" range
             if (weight < 1 and weight_range == "<1kg") or \
                (1 <= weight <= 2.4 and weight_range == "1-2.4kg") or \
-               (weight > 2.5 and weight_range == ">2.5kg"):
+               (weight >= 2.5 and weight_range == ">2.5kg"):
                 for dose_option in dose_options:
                     total_volume, hourly_rate = calculate_infusion(drug, dose_option, total_dose_mcg)
                     results.append({
@@ -199,6 +175,29 @@ def prescribe_infusion():
                                error_message=error_message, guardrail_data=guardrail_data)
 
     return render_template("index.html", guardrail_data=guardrail_data)
+
+# Function to calculate total dose
+def calculate_total_dose(dose, weight, unit_per_minute):
+    # If the unit is per minute, multiply by 60 to get the dose per hour
+    if unit_per_minute:
+        return dose * weight * 24 * 60  # Total dose for 24 hours
+    else:
+        return dose * weight * 24  # Total dose for 24 hours without multiplying by 60
+
+# Function to calculate infusion details
+def calculate_infusion(drug, concentration_mg, total_dose_mcg):
+    concentration_mcg = concentration_mg * 1000  # Convert mg to mcg
+    
+    # Use the correct volume (50 ml for Insulin, 25 ml for others)
+    if drug == "Insulin":
+        volume = 50
+    else:
+        volume = 25
+    
+    total_volume = (total_dose_mcg / concentration_mcg) * volume  # Calculate the total volume in ml
+    hourly_rate = total_volume / 24  # Calculate the hourly rate (ml/hr)
+    
+    return total_volume, hourly_rate
 
 # Ensure the app listens on the correct port for the platform
 if __name__ == "__main__":
