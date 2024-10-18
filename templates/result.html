@@ -6,7 +6,7 @@
     <title>Results for {{ drug }}</title>
     <style>
         body {
-            background-color: #e0f7e9;
+            background-color: #f3e5f5; /* Light purple background */
             font-family: Arial, sans-serif;
             color: #333;
             margin: 0;
@@ -14,7 +14,7 @@
         }
         h1 {
             text-align: center;
-            color: #2b7a4b;
+            color: #6a1b9a; /* Dark purple for headings */
             font-size: 2em;
             margin: 10px 0;
         }
@@ -64,7 +64,7 @@
             <li>
                 Concentration: {{ result.concentration }} mg, 
                 Total Volume: {{ result.total_volume }} ml, 
-                Infusion Rate: {{ result.hourly_rate }} ml/hour
+                Infusion Rate: {{ result.hourly_rate }} ml/hr
             </li>
             {% endfor %}
         </ul>
